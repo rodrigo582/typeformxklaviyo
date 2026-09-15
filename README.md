@@ -16,7 +16,7 @@ into a dedicated Klaviyo list, respecting each respondent's marketing-email cons
   Yes | No
   ```
 
-- **Klaviyo list:** `Graymatter Masterclass: 6 Pillars` (ID `RAXTpK`), single opt-in.
+- **Klaviyo list:** `Graymatter Masterclass: 6 Pillars` (ID `Xk7Xza`), single opt-in.
   List membership alone never triggers a marketing send — actual email-marketing consent
   is a separate, explicit step (see below).
 
@@ -33,11 +33,11 @@ Runs once a day (see "Automation" below). For the current calendar day
      - `typeform_marketing_consent`: `"yes"` or `"no"`
      - `typeform_masterclass_consent_source`: `"Graymatter Masterclass: 6 Pillars (Typeform via Slack #typeform_masterclass)"`
      - `typeform_masterclass_consent_date`: date of the Slack message (`YYYY-MM-DD`)
-   - Add the profile to list `RAXTpK` (`add_profiles_to_list`). This happens for
+   - Add the profile to list `Xk7Xza` (`add_profiles_to_list`). This happens for
      non-consenting respondents too — they're on the list, but flagged and never
      subscribed to marketing.
 4. Collect every "Yes" respondent from the day into **one single batched call** to
-   `subscribe_profile_to_marketing` (email channel, list `RAXTpK`). Klaviyo requires
+   `subscribe_profile_to_marketing` (email channel, list `Xk7Xza`). Klaviyo requires
    live human confirmation on this action every time — it cannot be bypassed. Batching
    means the day's approval is a single confirmation regardless of how many people
    said yes that day, rather than one per person.
@@ -52,8 +52,15 @@ Runs once a day (see "Automation" below). For the current calendar day
 ## Automation
 
 A daily scheduled Routine (Claude Code on the web) triggers a fresh session that
-carries out the algorithm above, with `Slack` and `Klaviyo` connector access. See
-the Routine named **"Daily Typeform → Klaviyo masterclass consent sync"**.
+carries out the algorithm above. See the Routine named
+**"Daily Typeform to Klaviyo masterclass consent sync"**.
+
+**Known setup gap:** the Routine still needs `Slack` and `Klaviyo` connector access
+enabled on it before it can actually run. The `create_trigger`/`update_trigger` API
+this was built with is blocked from attaching connectors for this org, so it has to
+be finished from the claude.ai Routines UI — open the Routine by name and enable both
+connectors there. Until that's done, each firing will have no Slack/Klaviyo tools
+available and won't be able to do anything.
 
 Notes:
 - Idempotent by design: re-running over the same day's messages just re-upserts the
